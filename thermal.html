@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thermal Expansion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="index.html">← Back</a>
+    <h1>Thermal Expansion</h1>
+  </header>
+
+  <main class="sim">
+    <section class="controls">
+      <label>Initial Length L₀ (m)
+        <input id="L0" type="number" step="0.01" value="1.0">
+      </label>
+      <label>α (1/°C)
+        <input id="alpha" type="number" step="0.000001" value="0.000012">
+      </label>
+      <label>ΔT (°C)
+        <input id="dT" type="number" step="1" value="50">
+      </label>
+
+      <button id="compute">Compute</button>
+      <div class="results" id="results">ΔL = — m, L = — m</div>
+    </section>
+
+    <section class="output">
+      <canvas id="view" width="720" height="420"></canvas>
+      <small class="note">Placeholder. You’ll compute ΔL = α L₀ ΔT and draw new length.</small>
+    </section>
+  </main>
+
+  <script src="js/thermal.js"></script>
+</body>
+</html>
