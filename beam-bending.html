@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Beam Bending • STEM Lab Simulations</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* minimal page-specific styling */
+    .wrap { max-width: 1000px; margin: 24px auto; padding: 0 12px; }
+    .grid { display: grid; gap: 16px; }
+    @media (min-width: 780px){ .grid { grid-template-columns: 320px 1fr; } }
+    .panel { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 14px; }
+    .controls label { display:block; font-size:14px; margin: 10px 0 4px; }
+    .inline { display:flex; gap:10px; align-items:center; }
+    .small { font-size:12px; color:#666; }
+    .out { margin-top:10px; font-size:14px; }
+    svg { width:100%; height:280px; background:#fafafa; border-radius:10px; border:1px solid #eee; }
+    .diagram-title { font-size:14px; margin:8px 0 4px; color:#444; }
+    .btn { padding:10px 14px; border-radius:8px; border:1px solid #ddd; background:#0a7cff; color:#fff; font-weight:600; }
+    .btn.secondary { background:#fff; color:#333; }
+    .stack > * + * { margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Beam Bending (Uniform Load)</h1>
+    <p class="small">Simply supported beam with uniform load across the whole span. Change inputs and watch the deflection curve and bending moment update.</p>
+
+    <div class="grid">
+      <!-- LEFT: Controls -->
+      <div class="panel controls">
+        <h3>Inputs</h3>
+
+        <label>Beam length L (m)</label>
+        <input id="L" type="number" step="0.1" min="0.5" value="2.0" />
+
+        <label>Elastic modulus E (Pa)</label>
+        <input id="E" type="number" step="1e9" value="2.0e11" />
+
+        <label>Second moment of area I (m⁴)</label>
+        <input id="I" type="number" step="1e-8" value="8.0e-6" />
+
+        <label>Uniform load w (N/m)</label>
+        <input id="w" type="number" step="10" value="1000" />
+
+        <div class="inline" style="margin-top:12px;">
+          <button class="btn" id="run">Run</button>
+          <button class="btn secondary" id="reset">Reset</button>
+        </div>
+
+        <div class="out stack">
+          <div><strong>Max deflection |v|max:</strong> <span id="vmax">—</span></div>
+          <div><strong>Max bending moment M<sub>max</sub>:</strong> <span id="mmax">—</span></div>
+          <div class="small">Note: Deflection is exaggerated to make the curve visible.</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Visuals -->
+      <div class="panel">
+        <div class="diagram-title">Beam & Deflection (scaled)</div>
+        <svg id="beamSvg" viewBox="0 0 800 260" preserveAspectRatio="none"></svg>
+
+        <div class="diagram-title" style="margin-top:14px;">Bending Moment Diagram</div>
+        <svg id="momentSvg" viewBox="0 0 800 260" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top:18px;">
+      Model: Simply supported beam, uniform load w over entire span. Formulas used:<br/>
+      v(x) = [ w·x·(L³ − 2Lx² + x³) ] / [ 24·E·I ]  and  M(x) = (w/2)·(Lx − x²)
+    </p>
+
+    <p class="small">
+      <a href="index.html">← Back to Home</a>
+    </p>
+  </div>
+
+  <script src="js/beam.js"></script>
+</body>
+</html>
