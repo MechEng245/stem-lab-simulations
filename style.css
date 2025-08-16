@@ -53,3 +53,12 @@ p {
 .note { color:#777; display:block; margin-top:6px; }
 .card { display:block; padding:14px; border:1px solid #eee; border-radius:10px; text-decoration:none; color:inherit; }
 .card:hover { background:#fafafa; }
+/* Teacher Kit cards */
+.card.kit {
+  background-color: #f9f5ff;   /* light purple background */
+  border-left: 6px solid #6a0dad; /* purple accent line */
+}
+
+.card.kit h3::before {
+  content: "📘 ";  /* book emoji before the title */
+}
