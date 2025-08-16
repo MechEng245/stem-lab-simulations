@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beam Bending – Teacher Kit</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    main { max-width: 900px; margin: 2rem auto; padding: 1rem; }
+    .btns a, .btns button { padding: .75rem 1rem; border: 1px solid #ccc; border-radius: 8px; text-decoration:none; display:inline-block; margin:.25rem 0; }
+    table { width:100%; border-collapse: collapse; margin:.5rem 0 1.5rem; }
+    th, td { border:1px solid #ddd; padding:.5rem; text-align:left; }
+    code, kbd, var { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">← Back to Home</a>
+    <h1>Beam Bending — Teacher Kit</h1>
+    <p><strong>Goal:</strong> Show how a cantilever beam bends more when load or length increases, and less when the material is stiffer or the section is stronger.</p>
+
+    <div class="btns">
+      <a href="../beam-bending.html">Open Simulation</a>
+      <button onclick="window.print()">Print this Kit</button>
+    </div>
+
+    <section>
+      <h2>Quick Setup (iPad)</h2>
+      <ol>
+        <li>Open the simulation and rotate iPad to landscape.</li>
+        <li>Enter <em>Material</em> (sets <var>E</var>) and cross-section (sets <var>I</var>).</li>
+        <li>Set <em>Length</em> <var>L</var> and <em>End Load</em> <var>F</var>.</li>
+        <li>Tap <strong>Run</strong> → discuss the deflection shape and value.</li>
+      </ol>
+      <p><small>Tip: use two presets (e.g., Aluminum vs. Steel) so students can compare quickly.</small></p>
+    </section>
+
+    <section>
+      <h2>Key Formula (cantilever, end load)</h2>
+      <p>Maximum tip deflection:</p>
+      <p><code>δ = (F · L³) / (3 · E · I)</code></p>
+      <ul>
+        <li><var>F</var>: load (N), <var>L</var>: length (m)</li>
+        <li><var>E</var>: Young’s modulus (Pa), <var>I</var>: second moment of area (m⁴)</li>
+      </ul>
+      <p><small>If your sim uses a different support/loading, swap in that case’s formula.</small></p>
+    </section>
+
+    <section>
+      <h2>Classroom Activity (10–15 min)</h2>
+      <ol>
+        <li>Keep <var>L</var>, <var>E</var>, and <var>I</var> fixed. Double the load: what happens to <var>δ</var>?</li>
+        <li>Reset load; now double length: what happens to <var>δ</var>? (Cubic relationship!)</li>
+        <li>Switch materials: which one bends less? Why?</li>
+      </ol>
+      <table>
+        <thead>
+          <tr><th>Material (E)</th><th>I (shape)</th><th>L (m)</th><th>F (N)</th><th>Measured δ (m)</th><th>Prediction trend?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Steel</td><td>Rect.</td><td>0.5</td><td>10</td><td></td><td></td></tr>
+          <tr><td>Aluminum</td><td>Rect.</td><td>0.5</td><td>10</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <p><strong>Exit ticket:</strong> “If I triple <var>L</var>, how does <var>δ</var> change?”</p>
+    </section>
+  </main>
+</body>
+</html>
