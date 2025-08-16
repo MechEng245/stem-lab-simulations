@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tensile Test – Teacher Kit</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>main{max-width:900px;margin:2rem auto;padding:1rem}.btns a,.btns button{padding:.75rem 1rem;border:1px solid #ccc;border-radius:8px;text-decoration:none;display:inline-block;margin:.25rem 0}table{width:100%;border-collapse:collapse;margin:.5rem 0 1.5rem}th,td{border:1px solid #ddd;padding:.5rem;text-align:left}code,var{font-family:ui-monospace,Menlo,Consolas,monospace}</style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">← Back to Home</a>
+    <h1>Tensile Test — Teacher Kit</h1>
+    <p><strong>Goal:</strong> Understand stress–strain, Young’s modulus, yield, and ultimate strength.</p>
+
+    <div class="btns">
+      <a href="../tensile.html">Open Simulation</a>
+      <button onclick="window.print()">Print this Kit</button>
+    </div>
+
+    <section>
+      <h2>Quick Setup (iPad)</h2>
+      <ol>
+        <li>Choose a material and enter specimen diameter/width &amp; gauge length.</li>
+        <li>Start the test; the graph shows stress vs. strain in real time.</li>
+        <li>Pause near yield; note slope (≈ <var>E</var>), yield strength, and UTS.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Key Relations</h2>
+      <ul>
+        <li><strong>Stress:</strong> <code>σ = F / A</code></li>
+        <li><strong>Strain:</strong> <code>ε = ΔL / L₀</code></li>
+        <li><strong>Elastic slope (Young’s modulus):</strong> <code>E = σ / ε</code> (linear region)</li>
+        <li><strong>Percent elongation:</strong> <code>%EL = (L_f − L₀)/L₀ × 100</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Classroom Activity (10–15 min)</h2>
+      <ol>
+        <li>Run two tests: Material A (e.g., Aluminum) vs. Material B (Steel). Compare <var>E</var>, yield, UTS, and ductility.</li>
+        <li>Ask: “Which one is tougher?” (look at area under the curve)</li>
+      </ol>
+      <table>
+        <thead>
+          <tr><th>Material</th><th>E (GPa)</th><th>Yield σ<sub>y</sub> (MPa)</th><th>UTS (MPa)</th><th>%EL</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Aluminum</td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Steel</td><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <p><strong>Exit ticket:</strong> Explain why the slope at the start of the curve equals <var>E</var>.</p>
+    </section>
+  </main>
+</body>
+</html>
