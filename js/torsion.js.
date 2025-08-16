@@ -1,42 +1,43 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Torsion of a Round Shaft</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="topbar">
-    <a class="back" href="index.html">← Back</a>
-    <h1>Torsion of a Round Shaft</h1>
-  </header>
+(function () {
+  const els = {
+    T: document.getElementById('T'),
+    L: document.getElementById('L'),
+    d: document.getElementById('d'),
+    G: document.getElementById('G'),
+    btn: document.getElementById('compute'),
+    out: document.getElementById('results'),
+    canvas: document.getElementById('view')
+  };
+  const ctx = els.canvas.getContext('2d');
 
-  <main class="sim">
-    <section class="controls">
-      <label>Torque T (N·m)
-        <input id="T" type="number" step="1" value="100">
-      </label>
-      <label>Length L (m)
-        <input id="L" type="number" step="0.01" value="1.0">
-      </label>
-      <label>Diameter d (m)
-        <input id="d" type="number" step="0.001" value="0.05">
-      </label>
-      <label>Shear Modulus G (GPa)
-        <input id="G" type="number" step="1" value="80">
-      </label>
+  function frame() {
+    const { width:w, height:h } = els.canvas;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeRect(40,30,w-80,h-60);
+    ctx.font = '14px system-ui';
+    ctx.fillText('Torsion placeholder', 50, 50);
+    // shaft
+    ctx.fillRect(120, h/2 - 20, w-240, 40);
+    // arrows
+    ctx.beginPath();
+    ctx.moveTo(80,h/2); ctx.lineTo(120,h/2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(w-80,h/2); ctx.lineTo(w-120,h/2); ctx.stroke();
+  }
 
-      <button id="compute">Compute</button>
-      <div class="results" id="results">θ = — rad, τ_max = — MPa</div>
-    </section>
+  function compute() {
+    // TODO: real math
+    const T = +els.T.value;          // N·m
+    const L = +els.L.value;          // m
+    const d = +els.d.value;          // m
+    const G = +els.G.value * 1e9;    // Pa
+    const J = Math.PI*Math.pow(d,4)/32; // polar moment
+    const theta = T*L/(G*J);            // rad
+    const tauMax = (16*T)/(Math.PI*Math.pow(d,3))/1e6; // MPa
+    els.out.textContent = `θ ≈ ${theta.toFixed(4)} rad, τ_max ≈ ${tauMax.toFixed(2)} MPa`;
+    frame();
+  }
 
-    <section class="output">
-      <canvas id="view" width="720" height="420"></canvas>
-      <small class="note">Placeholder graphic. You’ll compute θ = TL/(GJ) and τ_max = 16T/(π d³).</small>
-    </section>
-  </main>
-
-  <script src="js/torsion.js"></script>
-</body>
-</html>
+  frame();
+  els.btn.addEventListener('click', compute);
+})();
