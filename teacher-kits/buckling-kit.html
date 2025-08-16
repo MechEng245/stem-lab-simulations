@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Column Buckling – Teacher Kit</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>main{max-width:900px;margin:2rem auto;padding:1rem}.btns a,.btns button{padding:.75rem 1rem;border:1px solid #ccc;border-radius:8px;text-decoration:none;display:inline-block;margin:.25rem 0}table{width:100%;border-collapse:collapse;margin:.5rem 0 1.5rem}th,td{border:1px solid #ddd;padding:.5rem;text-align:left}code,var{font-family:ui-monospace,Menlo,Consolas,monospace}</style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">← Back to Home</a>
+    <h1>Column Buckling — Teacher Kit</h1>
+    <p><strong>Goal:</strong> Explore Euler buckling and how length and end conditions control critical load.</p>
+
+    <div class="btns">
+      <a href="../buckling.html">Open Simulation</a>
+      <button onclick="window.print()">Print this Kit</button>
+    </div>
+
+    <section>
+      <h2>Quick Setup (iPad)</h2>
+      <ol>
+        <li>Select material (<var>E</var>) and cross-section (<var>I</var>).</li>
+        <li>Choose end condition (effective length factor <var>K</var>).</li>
+        <li>Set column length <var>L</var>. Increase axial load slowly.</li>
+        <li>Observe the load at which the column snaps into a bent shape.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Key Formula (Euler critical load)</h2>
+      <p><code>P<sub>cr</sub> = (π² · E · I) / (K · L)²</code></p>
+      <ul>
+        <li><var>K</var> (approx): pinned-pinned = 1.0; fixed-free = 2.0; fixed-pinned ≈ 0.7; fixed-fixed = 0.5</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Classroom Activity (10–15 min)</h2>
+      <ol>
+        <li>Hold <var>E</var>, <var>I</var>, and supports fixed. Double <var>L</var>. Predict and test how <code>P<sub>cr</sub></code> changes (∝ 1/<var>L</var>²).</li>
+        <li>Keep <var>L</var> fixed. Switch from pinned-pinned to fixed-fixed. What happens to strength?</li>
+        <li>Discuss why tall, slender columns fail at small loads.</li>
+      </ol>
+      <table>
+        <thead>
+          <tr><th>K (supports)</th><th>L (m)</th><th>E (Pa)</th><th>I (m⁴)</th><th>Measured P<sub>cr</sub> (N)</th><th>Trend</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1.0</td><td>1.0</td><td>—</td><td>—</td><td></td><td></td></tr>
+          <tr><td>0.5</td><td>1.0</td><td>—</td><td>—</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
