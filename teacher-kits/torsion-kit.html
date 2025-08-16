@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torsion of Shafts – Teacher Kit</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>main{max-width:900px;margin:2rem auto;padding:1rem}.btns a,.btns button{padding:.75rem 1rem;border:1px solid #ccc;border-radius:8px;text-decoration:none;display:inline-block;margin:.25rem 0}table{width:100%;border-collapse:collapse;margin:.5rem 0 1.5rem}th,td{border:1px solid #ddd;padding:.5rem;text-align:left}code,var{font-family:ui-monospace,Menlo,Consolas,monospace}</style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">← Back to Home</a>
+    <h1>Torsion of Circular Shafts — Teacher Kit</h1>
+    <p><strong>Goal:</strong> Relate torque, angle of twist, and shear stress; see effects of diameter, length, and material.</p>
+
+    <div class="btns">
+      <a href="../torsion.html">Open Simulation</a>
+      <button onclick="window.print()">Print this Kit</button>
+    </div>
+
+    <section>
+      <h2>Quick Setup (iPad)</h2>
+      <ol>
+        <li>Choose material (sets shear modulus <var>G</var>).</li>
+        <li>Enter shaft length <var>L</var> and diameter <var>d</var>.</li>
+        <li>Apply torque <var>T</var> and observe angle of twist and shear stress.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Key Relations (solid circular)</h2>
+      <ul>
+        <li><strong>Angle of twist:</strong> <code>θ = (T · L) / (J · G)</code></li>
+        <li><strong>Max shear stress:</strong> <code>τ<sub>max</sub> = (T · r) / J</code>, where <code>J = π d⁴ / 32</code> and <code>r = d/2</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Classroom Activity (10–15 min)</h2>
+      <ol>
+        <li>Hold <var>L</var>, <var>G</var>, <var>T</var> fixed. Increase diameter by 20%. What happens to <var>θ</var> and <var>τ</var>?</li>
+        <li>Double the length. How does twist change? (linear in <var>L</var>)</li>
+        <li>Compare a soft vs. stiff material at the same geometry.</li>
+      </ol>
+      <table>
+        <thead>
+          <tr><th>d (mm)</th><th>L (mm)</th><th>G (GPa)</th><th>T (N·m)</th><th>θ (rad)</th><th>τ<sub>max</sub> (MPa)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10</td><td>300</td><td>—</td><td>—</td><td></td><td></td></tr>
+          <tr><td>12</td><td>300</td><td>—</td><td>—</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
