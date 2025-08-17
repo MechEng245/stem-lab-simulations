@@ -1,60 +1,339 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>STEM Lab Simulations</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Minimal layout helpers so this page looks great right away.
+       These won't fight your style.css; they just provide structure. -->
+  <style>
+    :root{
+      --brand:#ff7a00;          /* accent (can tweak) */
+      --ink:#222;               /* text */
+      --muted:#666;             /* secondary text */
+      --bg:#fff;                /* page background */
+      --card:#f7f7f9;           /* card background */
+      --line:#ececf1;           /* hairline */
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;line-height:1.6}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* Header / Nav */
+    .topbar{position:sticky;top:0;z-index:50;background:#ffffffd9;backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid var(--line)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:700;letter-spacing:.2px}
+    .brand img{width:28px;height:28px}
+    .nav a.btn{padding:10px 14px;border-radius:8px;border:1px solid var(--line)}
+    .navlinks{display:flex;gap:14px;flex-wrap:wrap}
+    .navlinks a{padding:8px 10px;border-radius:8px}
+    .navlinks a:hover{background:#f2f2f4}
+
+    /* Hero */
+    .hero{position:relative;isolation:isolate}
+    .hero-inner{max-width:1100px;margin:0 auto;padding:72px 20px 56px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+    .hero h1{font-size:clamp(28px,6vw,56px);line-height:1.08;margin:0 0 10px}
+    .hero p{color:var(--muted);margin:0 0 22px}
+    .cta{display:inline-block;background:var(--brand);color:#fff;font-weight:700;padding:12px 18px;border-radius:10px}
+    .ctalink{display:inline-block;margin-left:12px;padding:12px 18px;border-radius:10px;border:1px solid var(--line)}
+    .stats{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px}
+    .stat{min-width:120px;background:var(--card);padding:12px 14px;border-radius:12px;border:1px solid var(--line)}
+    .hero-visual{border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.06)}
+    .hero-visual div{aspect-ratio:16/10;background:linear-gradient(135deg,#eef2ff, #fafafa);display:grid;place-items:center}
+    .hero-visual span{font-weight:600;color:#7a7a7a}
+
+    /* Section shell */
+    section{max-width:1100px;margin:0 auto;padding:56px 20px;border-top:1px solid var(--line)}
+    section h2{font-size:clamp(22px,3.5vw,34px);margin:0 0 8px}
+    .eyebrow{color:var(--brand);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.78rem}
+
+    /* About */
+    .about{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .about p{color:var(--muted)}
+    .about .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+
+    /* Simulations grid */
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+    .card{grid-column:span 6;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease}
+    .card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.1)}
+    .thumb{height:150px;background:linear-gradient(135deg,#fff,#f1f5ff)}
+    .card .body{padding:16px}
+    .card h3{margin:0 0 6px}
+    .card p{margin:0 0 12px;color:var(--muted)}
+    .launch{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--brand);color:#fff;font-weight:700}
+
+    /* Services / Features */
+    .features{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .feature{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+    .feature h4{margin:8px 0 6px}
+
+    /* Gallery strip */
+    .gallery{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+    .tile{aspect-ratio:1/1;background:#f1f4f8;border:1px solid var(--line);border-radius:10px}
+
+    /* Kits grid */
+    .kitgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+    .kit{grid-column:span 4;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+    .kit p{color:var(--muted);margin:.25rem 0 .75rem}
+
+    /* Team */
+    .team{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .person{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:center}
+    .avatar{height:180px;background:linear-gradient(180deg,#f4f7ff,#f7f7f7)}
+    .person h5{margin:10px 0 0}
+    .role{color:var(--muted);font-size:.92rem;margin:2px 0 14px}
+
+    /* Contact + Footer */
+    .contactbox{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .contactbox .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+    footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;color:#777}
+    @media (max-width:900px){
+      .hero-inner{grid-template-columns:1fr}
+      .about{grid-template-columns:1fr}
+      .features{grid-template-columns:1fr 1fr}
+      .team{grid-template-columns:1fr 1fr}
+      .grid .card,.kitgrid .kit{grid-column:span 12}
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Welcome to the STEM Lab Simulations Website!</h1>
-  <p>This project helps students do science and engineering experiments online.</p>
-  <a href="beam-bending.html" class="card">
-  <h3>Beam Bending (Uniform Load)</h3>
-  <p>See live deflection and bending moment for a simply supported beam under a uniform load.</p>
-</a>
-  <!-- Add under the Beam Bending card on index.html -->
-<a class="card" href="torsion.html">
-  <h3>Torsion of a Round Shaft</h3>
-  <p>Twist vs torque, angle/radians.</p>
-</a>
 
-<a class="card" href="buckling.html">
-  <h3>Euler Column Buckling</h3>
-  <p>Critical load vs length/end condition.</p>
-</a>
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="assets/logo.svg" alt="Logo" />
+        <span>STEM Lab Simulations</span>
+      </div>
+      <nav class="navlinks">
+        <a href="#about">About</a>
+        <a href="#simulations">Simulations</a>
+        <a href="#features">Features</a>
+        <a href="#kits">Teacher Kits</a>
+        <a href="#team">Team</a>
+        <a href="#contact" class="btn">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-<a class="card" href="tensile.html">
-  <h3>Tensile Test (Stress–Strain)</h3>
-  <p>Elastic region, yield, ultimate (later).</p>
-</a>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="eyebrow">Modern engineering labs online</span>
+        <h1>Hands-on simulations for schools without labs</h1>
+        <p>Interactive beam bending, buckling, tensile testing, torsion, and thermal experiments —
+           right in the browser. Built for teachers and students.</p>
+        <a class="cta" href="#simulations">Explore simulations</a>
+        <a class="ctalink" href="#kits">Teacher kits</a>
 
-<a class="card" href="thermal.html">
-  <h3>Thermal Expansion</h3>
-  <p>ΔL from temperature change.</p>
-  <h2>Teacher Kits</h2>
+        <div class="stats">
+          <div class="stat"><strong>5</strong><br/>Core simulations</div>
+          <div class="stat"><strong>Fast</strong><br/>iPad-friendly</div>
+          <div class="stat"><strong>Free</strong><br/>for students</div>
+        </div>
+      </div>
 
-<a class="card" href="teacher-kits/beam-kit.html">
-  <h3>Beam Bending Kit</h3>
-  <p>Quick guide for using the beam bending simulation in class.</p>
-</a>
+      <div class="hero-visual">
+        <div><span>STEM • Materials • Mechanics</span></div>
+      </div>
+    </div>
+  </section>
 
-<a class="card" href="teacher-kits/buckling-kit.html">
-  <h3>Buckling Kit</h3>
-  <p>Explore Euler buckling with classroom-ready instructions.</p>
-</a>
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about">
+      <div>
+        <span class="eyebrow">About us</span>
+        <h2>Access to labs for every learner</h2>
+        <p>We created STEM Lab Simulations to give high school and college students
+           realistic engineering experiments without expensive equipment. Each module
+           explains the physics in plain language and lets you change inputs to see results instantly.</p>
+        <p class="panel">Tip for teachers: pair simulations with our printable kits to run a
+           complete 45–60 minute lesson — objectives, steps, and checks for understanding.</p>
+      </div>
+      <div class="panel">
+        <strong>What’s inside:</strong>
+        <ul>
+          <li>Interactive plots and instant calculations</li>
+          <li>Clear formulas and definitions</li>
+          <li>Works great on iPad and Chromebook</li>
+          <li>No signup required</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-<a class="card" href="teacher-kits/tensile-kit.html">
-  <h3>Tensile Test Kit</h3>
-  <p>Stress–strain curves with guided activities for students.</p>
-</a>
+  <!-- SIMULATIONS -->
+  <section id="simulations">
+    <span class="eyebrow">Recent projects</span>
+    <h2>Our simulations</h2>
 
-<a class="card" href="teacher-kits/thermal-kit.html">
-  <h3>Thermal Expansion Kit</h3>
-  <p>See how temperature affects length of materials.</p>
-</a>
+    <div class="grid">
+      <!-- Beam Bending -->
+      <a class="card" href="beam-bending.html">
+        <div class="thumb" aria-hidden="true"></div>
+        <div class="body">
+          <h3>Beam Bending (Uniform Load)</h3>
+          <p>See deflection and bending moment for a simply supported beam.</p>
+          <span class="launch">Launch</span>
+        </div>
+      </a>
 
-<a class="card" href="teacher-kits/torsion-kit.html">
-  <h3>Torsion Kit</h3>
-  <p>Understand torque, twist, and shear stress in shafts.</p>
-</a>
+      <!-- Buckling -->
+      <a class="card" href="buckling.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <h3>Euler Column Buckling</h3>
+          <p>Critical load vs. length and end conditions.</p>
+          <span class="launch">Launch</span>
+        </div>
+      </a>
+
+      <!-- Tensile -->
+      <a class="card" href="tensile.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <h3>Tensile Test (Stress–Strain)</h3>
+          <p>Elastic region, yield, and ultimate strength.</p>
+          <span class="launch">Launch</span>
+        </div>
+      </a>
+
+      <!-- Torsion -->
+      <a class="card" href="torsion.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <h3>Torsion of a Round Shaft</h3>
+          <p>Twist vs. torque and angle in radians.</p>
+          <span class="launch">Launch</span>
+        </div>
+      </a>
+
+      <!-- Thermal -->
+      <a class="card" href="thermal.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <h3>Thermal Expansion</h3>
+          <p>Change in length from temperature.</p>
+          <span class="launch">Launch</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <span class="eyebrow">Our services</span>
+    <h2>What we provide</h2>
+    <div class="features">
+      <div class="feature">
+        <div>🧪</div>
+        <h4>Interactive Physics</h4>
+        <p>Real formulas with instant graphs and feedback.</p>
+      </div>
+      <div class="feature">
+        <div>📱</div>
+        <h4>Classroom-Ready</h4>
+        <p>Works smoothly on iPad; no installs or logins.</p>
+      </div>
+      <div class="feature">
+        <div>🧑‍🏫</div>
+        <h4>Teacher Materials</h4>
+        <p>Guided activities, objectives, and checks.</p>
+      </div>
+      <div class="feature">
+        <div>🎯</div>
+        <h4>Standards Friendly</h4>
+        <p>Clear learning goals for quick lesson planning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY STRIP (optional aesthetic row) -->
+  <section aria-label="Gallery">
+    <div class="gallery">
+      <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+      <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+    </div>
+  </section>
+
+  <!-- TEACHER KITS -->
+  <section id="kits">
+    <span class="eyebrow">Teacher kits</span>
+    <h2>Quick classroom guides</h2>
+    <div class="kitgrid">
+      <a class="kit" href="teacher-kits/beam-kit.html">
+        <h3>Beam Bending Kit</h3>
+        <p>Quick guide for using the beam simulation in class.</p>
+        <span class="launch">Open</span>
+      </a>
+      <a class="kit" href="teacher-kits/buckling-kit.html">
+        <h3>Buckling Kit</h3>
+        <p>Euler buckling with ready-to-use instructions.</p>
+        <span class="launch">Open</span>
+      </a>
+      <a class="kit" href="teacher-kits/tensile-kit.html">
+        <h3>Tensile Test Kit</h3>
+        <p>Stress-strain curves with guided activities.</p>
+        <span class="launch">Open</span>
+      </a>
+      <a class="kit" href="teacher-kits/thermal-kit.html">
+        <h3>Thermal Expansion Kit</h3>
+        <p>See how temperature affects length.</p>
+        <span class="launch">Open</span>
+      </a>
+      <a class="kit" href="teacher-kits/torsion-kit.html">
+        <h3>Torsion Kit</h3>
+        <p>Understand torque, twist, and shear in shafts.</p>
+        <span class="launch">Open</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team">
+    <span class="eyebrow">Meet the team</span>
+    <h2>Built by students, for students</h2>
+    <div class="team">
+      <div class="person">
+        <div class="avatar" aria-hidden="true"></div>
+        <h5>Your Name</h5>
+        <div class="role">Founder • Developer</div>
+      </div>
+      <!-- Add more people later if you want -->
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <span class="eyebrow">Contact us</span>
+    <h2>We’d love to hear from you</h2>
+    <div class="contactbox">
+      <div class="panel">
+        <h3>Teachers</h3>
+        <p>Want a custom activity or help setting up on iPads?</p>
+        <p><a class="cta" href="mailto:hello@example.com">Email us</a></p>
+      </div>
+      <div class="panel">
+        <h3>Students</h3>
+        <p>Found a bug or have an idea for a new sim?</p>
+        <p><a class="ctalink" href="mailto:hello@example.com">Send feedback</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © <span id="y"></span> STEM Lab Simulations • Made for learning
+  </footer>
+
+  <script>
+    // tiny helper to keep the footer year current
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
