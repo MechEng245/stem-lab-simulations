@@ -1,64 +1,152 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  text-align: center;
-  padding: 50px;
+/* ================================
+   STEM Lab Simulations – Light UI
+   ================================ */
+
+:root{
+  --brand:#ff7a00;          /* accent color */
+  --ink:#222;               /* main text */
+  --muted:#666;             /* secondary text */
+  --bg:#fff;                /* page background */
+  --card:#f7f7f9;           /* card background */
+  --line:#ececf1;           /* hairline */
 }
 
-h1 {
-  color: #2c3e50;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
 
-p {
-  font-size: 18px;
-  color: #555;
+/* ---------- Buttons ---------- */
+.btn, .cta, .ctalink, .launch{
+  display:inline-block;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:700;
+  transition:transform .12s ease, box-shadow .22s ease, background .2s ease, border-color .2s ease;
+  will-change:transform;
 }
-.card {
-  display: block;
-  margin: 20px 0;
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  text-decoration: none;
-  background: #f9f9f9;
-  transition: 0.2s;
-}
+.cta, .launch{background:var(--brand);color:#fff}
+.cta:hover, .launch:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.12)}
+.ctalink, .btn{background:#fff;border:1px solid var(--line)}
+.ctalink:hover, .btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.06)}
 
-.card h3 {
-  margin: 0 0 6px;
-  color: #0a7cff;
+/* ---------- Topbar / Nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:#ffffffd9;
+  backdrop-filter:saturate(140%) blur(6px);
+  border-bottom:1px solid var(--line);
 }
-
-.card p {
-  margin: 0;
-  color: #333;
+.nav{
+  max-width:1100px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 20px;
 }
+.brand{display:flex;gap:10px;align-items:center;font-weight:700;letter-spacing:.2px}
+.brand img{width:28px;height:28px}
+.navlinks{display:flex;gap:14px;flex-wrap:wrap}
+.navlinks a{padding:8px 10px;border-radius:8px}
+.navlinks a:hover{background:#f2f2f4}
 
-.card:hover {
-  background: #eef5ff;
-  border-color: #0a7cff;
+/* ---------- Hero ---------- */
+.hero{position:relative;isolation:isolate}
+.hero-inner{
+  max-width:1100px;margin:0 auto;
+  padding:72px 20px 56px;
+  display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;
 }
-/* layout used by all sims */
-.topbar { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid #e5e5e5; }
-.topbar h1 { font-size:18px; margin:0; }
-.back { text-decoration:none; }
+.hero h1{font-size:clamp(28px,6vw,56px);line-height:1.08;margin:0 0 10px}
+.hero p{color:var(--muted);margin:0 0 22px}
+.stats{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px}
+.stat{min-width:120px;background:var(--card);padding:12px 14px;border-radius:12px;border:1px solid var(--line)}
+.hero-visual{border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.06)}
+.hero-visual div{aspect-ratio:16/10;background:linear-gradient(135deg,#eef2ff, #fafafa);display:grid;place-items:center}
+.hero-visual span{font-weight:600;color:#7a7a7a}
 
-.sim { display:grid; grid-template-columns: 280px 1fr; gap:16px; padding:16px; }
-.controls { display:flex; flex-direction:column; gap:10px; }
-.controls label { display:flex; flex-direction:column; font-size:14px; }
-.controls input, .controls select { padding:8px; }
-.results { padding:8px; background:#f7f7f9; border:1px solid #eee; border-radius:8px; }
-.output { position:relative; }
-.output canvas { width:100%; height:auto; border:1px solid #eee; background:#fff; border-radius:8px; }
-.note { color:#777; display:block; margin-top:6px; }
-.card { display:block; padding:14px; border:1px solid #eee; border-radius:10px; text-decoration:none; color:inherit; }
-.card:hover { background:#fafafa; }
-/* Teacher Kit cards */
-.card.kit {
-  background-color: #f9f5ff;   /* light purple background */
-  border-left: 6px solid #6a0dad; /* purple accent line */
+/* ---------- Sections ---------- */
+section{max-width:1100px;margin:0 auto;padding:56px 20px;border-top:1px solid var(--line)}
+section h2{font-size:clamp(22px,3.5vw,34px);margin:0 0 8px}
+.eyebrow{color:var(--brand);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.78rem}
+
+/* About */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.about p{color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+
+/* ---------- Cards / Grids ---------- */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.card{
+  grid-column:span 6;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  transition:transform .22s ease,box-shadow .22s ease;
 }
+.card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.1)}
+.thumb{height:150px;background:linear-gradient(135deg,#fff,#f1f5ff)}
+.card .body{padding:16px}
+.card h3{margin:0 0 6px}
+.card p{margin:0 0 12px;color:var(--muted)}
 
-.card.kit h3::before {
-  content: "📘 ";  /* book emoji before the title */
+/* Features */
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.feature{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.feature h4{margin:8px 0 6px}
+
+/* Gallery strip */
+.gallery{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.tile{aspect-ratio:1/1;background:#f1f4f8;border:1px solid var(--line);border-radius:10px}
+
+/* Teacher kits */
+.kitgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.kit{
+  grid-column:span 4;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  transition:transform .2s ease,box-shadow .22s ease;
+}
+.kit p{color:var(--muted);margin:.25rem 0 .75rem}
+.kit:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+
+/* Team */
+.team{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.person{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:center}
+.avatar{height:180px;background:linear-gradient(180deg,#f4f7ff,#f7f7f7)}
+.person h5{margin:10px 0 0}
+.role{color:var(--muted);font-size:.92rem;margin:2px 0 14px}
+
+/* Contact */
+.contactbox{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+/* Footer */
+footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;color:#777}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .about{grid-template-columns:1fr}
+  .features{grid-template-columns:1fr 1fr}
+  .team{grid-template-columns:1fr 1fr}
+  .grid .card, .kitgrid .kit{grid-column:span 12}
+  .gallery{grid-template-columns:repeat(6,1fr)}
+}
+@media (max-width:560px){
+  .features{grid-template-columns:1fr}
+  .team{grid-template-columns:1fr}
+  .gallery{grid-template-columns:repeat(4,1fr)}
 }
