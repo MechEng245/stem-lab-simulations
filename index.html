@@ -1,245 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>STEM Lab Simulations</title>
-  <link rel="stylesheet" href="style.css" />
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>STEM Lab CAD — Viewer</title>
+  <style>
+    html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system; }
+    .app { display: grid; grid-template-columns: 260px 1fr; height: 100%; }
+    .side {
+      border-right: 1px solid #eee; padding: 14px; overflow:auto;
+      background:#fafafa;
+    }
+    .side h2 { margin: 0 0 8px 0; font-size: 18px; }
+    .btn { display:block; width:100%; margin:8px 0; padding:10px 12px; border:1px solid #ddd; border-radius:8px; background:#fff; }
+    .btn:active { transform: scale(0.99); }
+    #dropzone {
+      border:1px dashed #bbb; border-radius:8px; padding:12px; text-align:center; color:#666; font-size:14px;
+    }
+    #canvas-wrap { position: relative; }
+    #three-canvas { display:block; width:100%; height:100vh; }
+    .footer { font-size: 12px; color:#777; margin-top:12px; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .row input[type="number"] { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; }
+    .pill { padding:4px 8px; border:1px solid #ddd; border-radius:999px; background:#fff; font-size:12px; }
+    a { color:#0a58ca; text-decoration: none; }
+  </style>
+</head>
 <body>
+  <div class="app">
+    <aside class="side">
+      <h2>Viewer</h2>
 
-  <!-- Top Navigation -->
-  <header class="topbar">
-    <div class="nav">
-      <div class="brand">
-        <img src="assets/logo.svg" alt="Logo" />
-        <span>STEM Lab Simulations</span>
-      </div>
-      <nav class="navlinks">
-        <a href="#about">About</a>
-        <a href="#simulations">Simulations</a>
-        <a href="#features">Features</a>
-        <a href="#kits">Teacher Kits</a>
-        <a href="#team">Team</a>
-        <a href="#contact" class="btn">Contact</a>
-      </nav>
-    </div>
-  </header>
+      <button class="btn" id="btn-load-sample">Load Sample Cube</button>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div>
-        <span class="eyebrow">Modern engineering labs online</span>
-        <h1>Hands-on simulations for schools without labs</h1>
-        <p>Interactive beam bending, buckling, tensile testing, torsion, and thermal experiments —
-           right in the browser. Built for teachers and students.</p>
-        <a class="cta" href="#simulations">Explore simulations</a>
-        <a class="ctalink" href="#kits">Teacher kits</a>
+      <label class="btn" for="file-stl">Import STL…</label>
+      <input id="file-stl" type="file" accept=".stl" style="display:none" />
 
-        <div class="stats">
-          <div class="stat"><strong>5</strong><br/>Core simulations</div>
-          <div class="stat"><strong>Fast</strong><br/>iPad-friendly</div>
-          <div class="stat"><strong>Free</strong><br/>for students</div>
-        </div>
+      <label class="btn" for="file-sketch">Import Sketch JSON…</label>
+      <input id="file-sketch" type="file" accept=".json" style="display:none" />
+
+      <div class="row">
+        <span class="pill">Extrude (mm)</span>
+        <input id="extrude-depth" type="number" value="20" />
+        <button class="btn" id="btn-extrude" style="flex:0 0 auto;">Go</button>
       </div>
 
-      <div class="hero-visual">
-        <div><span>STEM • Materials • Mechanics</span></div>
+      <button class="btn" id="btn-export-stl">Export STL</button>
+
+      <div id="dropzone" style="margin-top:8px;">
+        Drop STL or Sketch JSON here
       </div>
-    </div>
-  </section>
 
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="about">
-      <div>
-        <span class="eyebrow">About us</span>
-        <h2>Access to labs for every learner</h2>
-        <p>We created STEM Lab Simulations to give high school and college students
-           realistic engineering experiments without expensive equipment. Each module
-           explains the physics in plain language and lets you change inputs to see results instantly.</p>
-        <p class="panel">Tip for teachers: pair simulations with our printable kits to run a
-           complete 45–60 minute lesson — objectives, steps, and checks for understanding.</p>
+      <div class="footer">
+        <div>Tip: Make sketches on <a href="./sketch.html">sketch.html</a> then import here.</div>
+        <div id="feature-json"></div>
       </div>
-      <div class="panel">
-        <strong>What’s inside:</strong>
-        <ul>
-          <li>Interactive plots and instant calculations</li>
-          <li>Clear formulas and definitions</li>
-          <li>Works great on iPad and Chromebook</li>
-          <li>No signup required</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+    </aside>
 
-  <!-- SIMULATIONS -->
-  <section id="simulations">
-    <span class="eyebrow">Recent projects</span>
-    <h2>Our simulations</h2>
+    <main id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+    </main>
+  </div>
 
-    <div class="grid">
-      <!-- Beam Bending -->
-      <a class="card" href="beam-bending.html">
-        <div class="thumb" aria-hidden="true"></div>
-        <div class="body">
-          <h3>Beam Bending (Uniform Load)</h3>
-          <p>See deflection and bending moment for a simply supported beam.</p>
-          <span class="launch">Launch</span>
-        </div>
-      </a>
-
-      <!-- Buckling -->
-      <a class="card" href="buckling.html">
-        <div class="thumb"></div>
-        <div class="body">
-          <h3>Euler Column Buckling</h3>
-          <p>Critical load vs. length and end conditions.</p>
-          <span class="launch">Launch</span>
-        </div>
-      </a>
-
-      <!-- Tensile -->
-      <a class="card" href="tensile.html">
-        <div class="thumb"></div>
-        <div class="body">
-          <h3>Tensile Test (Stress–Strain)</h3>
-          <p>Elastic region, yield, and ultimate strength.</p>
-          <span class="launch">Launch</span>
-        </div>
-      </a>
-
-      <!-- Torsion -->
-      <a class="card" href="torsion.html">
-        <div class="thumb"></div>
-        <div class="body">
-          <h3>Torsion of a Round Shaft</h3>
-          <p>Twist vs. torque and angle in radians.</p>
-          <span class="launch">Launch</span>
-        </div>
-      </a>
-
-      <!-- Thermal -->
-      <a class="card" href="thermal.html">
-        <div class="thumb"></div>
-        <div class="body">
-          <h3>Thermal Expansion</h3>
-          <p>Change in length from temperature.</p>
-          <span class="launch">Launch</span>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section id="features">
-    <span class="eyebrow">Our services</span>
-    <h2>What we provide</h2>
-    <div class="features">
-      <div class="feature">
-        <div>🧪</div>
-        <h4>Interactive Physics</h4>
-        <p>Real formulas with instant graphs and feedback.</p>
-      </div>
-      <div class="feature">
-        <div>📱</div>
-        <h4>Classroom-Ready</h4>
-        <p>Works smoothly on iPad; no installs or logins.</p>
-      </div>
-      <div class="feature">
-        <div>🧑‍🏫</div>
-        <h4>Teacher Materials</h4>
-        <p>Guided activities, objectives, and checks.</p>
-      </div>
-      <div class="feature">
-        <div>🎯</div>
-        <h4>Standards Friendly</h4>
-        <p>Clear learning goals for quick lesson planning.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- GALLERY STRIP (optional aesthetic row) -->
-  <section aria-label="Gallery">
-    <div class="gallery">
-      <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-    </div>
-  </section>
-
-  <!-- TEACHER KITS -->
-  <section id="kits">
-    <span class="eyebrow">Teacher kits</span>
-    <h2>Quick classroom guides</h2>
-    <div class="kitgrid">
-      <a class="kit" href="teacher-kits/beam-kit.html">
-        <h3>Beam Bending Kit</h3>
-        <p>Quick guide for using the beam simulation in class.</p>
-        <span class="launch">Open</span>
-      </a>
-      <a class="kit" href="teacher-kits/buckling-kit.html">
-        <h3>Buckling Kit</h3>
-        <p>Euler buckling with ready-to-use instructions.</p>
-        <span class="launch">Open</span>
-      </a>
-      <a class="kit" href="teacher-kits/tensile-kit.html">
-        <h3>Tensile Test Kit</h3>
-        <p>Stress-strain curves with guided activities.</p>
-        <span class="launch">Open</span>
-      </a>
-      <a class="kit" href="teacher-kits/thermal-kit.html">
-        <h3>Thermal Expansion Kit</h3>
-        <p>See how temperature affects length.</p>
-        <span class="launch">Open</span>
-      </a>
-      <a class="kit" href="teacher-kits/torsion-kit.html">
-        <h3>Torsion Kit</h3>
-        <p>Understand torque, twist, and shear in shafts.</p>
-        <span class="launch">Open</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- TEAM -->
-  <section id="team">
-    <span class="eyebrow">Meet the team</span>
-    <h2>Built by students, for students</h2>
-    <div class="team">
-      <div class="person">
-        <div class="avatar" aria-hidden="true"></div>
-        <h5>Your Name</h5>
-        <div class="role">Founder • Developer</div>
-      </div>
-      <!-- Add more people later if you want -->
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact">
-    <span class="eyebrow">Contact us</span>
-    <h2>We’d love to hear from you</h2>
-    <div class="contactbox">
-      <div class="panel">
-        <h3>Teachers</h3>
-        <p>Want a custom activity or help setting up on iPads?</p>
-        <p><a class="cta" href="mailto:hello@example.com">Email us</a></p>
-      </div>
-      <div class="panel">
-        <h3>Students</h3>
-        <p>Found a bug or have an idea for a new sim?</p>
-        <p><a class="ctalink" href="mailto:hello@example.com">Send feedback</a></p>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    © <span id="y"></span> STEM Lab Simulations • Made for learning
-  </footer>
-
-  <script>
-    // tiny helper to keep the footer year current
-    document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
+  <script type="module" src="./js/viewer.js"></script>
 </body>
 </html>
