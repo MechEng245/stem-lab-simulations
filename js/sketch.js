@@ -1,204 +1,149 @@
-// Minimal web CAD viewer: orbit/pan/zoom, grid, axes, load STL, extrude 2D sketch to mesh, export STL.
+// Minimal 2D polygon sketcher: draw lines/rectangles, snap, export as [{x,y}...]
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-import { STLLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/STLLoader.js';
-import { STLExporter } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/exporters/STLExporter.js';
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-const canvas = document.getElementById('three-canvas');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff);
+const btnLine = document.getElementById('btn-line');
+const btnRect = document.getElementById('btn-rect');
+const btnClose = document.getElementById('btn-close');
+const btnClear = document.getElementById('btn-clear');
+const btnExport = document.getElementById('btn-export');
+const snapInput = document.getElementById('snap');
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(120, 120, 120);
+let tool = 'line';
+let points = [];       // working polyline points [{x,y},...]
+let tempRect = null;   // {x0,y0,x1,y1} while drawing
+let isDown = false;
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-resize();
-window.addEventListener('resize', resize);
+btnLine.onclick = () => { tool = 'line'; tempRect = null; redraw(); };
+btnRect.onclick = () => { tool = 'rect'; tempRect = null; redraw(); };
+btnClose.onclick = () => closeLoop();
+btnClear.onclick = () => { points = []; tempRect = null; redraw(); };
+btnExport.onclick = () => exportJSON();
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
+canvas.addEventListener('pointerdown', (e) => { isDown = true; handleDown(e); });
+canvas.addEventListener('pointermove', (e) => { if (isDown) handleMove(e); });
+canvas.addEventListener('pointerup',   (e) => { isDown = false; handleUp(e); });
 
-const grid = new THREE.GridHelper(400, 40, 0x888888, 0xdddddd);
-scene.add(grid);
-
-const axes = new THREE.AxesHelper(60);
-scene.add(axes);
-
-// Lighting
-const dir = new THREE.DirectionalLight(0xffffff, 0.8);
-dir.position.set(1, 1, 1);
-scene.add(dir);
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-
-let currentMesh = null;
-const loader = new STLLoader();
-const exporter = new STLExporter();
-
-// --- UI elements
-const fileSTL = document.getElementById('file-stl');
-const fileSketch = document.getElementById('file-sketch');
-const btnLoadSample = document.getElementById('btn-load-sample');
-const btnExportSTL = document.getElementById('btn-export-stl');
-const btnExtrude = document.getElementById('btn-extrude');
-const depthInput = document.getElementById('extrude-depth');
-const dropzone = document.getElementById('dropzone');
-const featureBox = document.getElementById('feature-json');
-
-// Minimal "feature history"
-let featureHistory = []; // e.g., [{type:'import-stl', name:'cube_ascii.stl'}] or {type:'extrude', depth:20, profile:[{x,y}...]}
-
-function setFeatureHistoryDisplay() {
-  featureBox.textContent = 'Features: ' + JSON.stringify(featureHistory, null, 0);
+function toLocal(e) {
+  const rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const snap = Math.max(1, Number(snapInput.value || 1));
+  x = Math.round(x / snap) * snap;
+  y = Math.round(y / snap) * snap;
+  return { x, y };
 }
 
-// --- Actions
-btnLoadSample.addEventListener('click', async () => {
-  const res = await fetch('./assets/models/cube_ascii.stl');
-  const txt = await res.text();
-  const arrayBuffer = new TextEncoder().encode(txt).buffer;
-  loadSTLFromArrayBuffer(arrayBuffer, 'cube_ascii.stl');
-  featureHistory.push({ type: 'load-sample', name: 'cube_ascii.stl' });
-  setFeatureHistoryDisplay();
-});
-
-fileSTL.addEventListener('change', (e) => {
-  const f = e.target.files[0];
-  if (!f) return;
-  f.arrayBuffer().then((ab) => {
-    loadSTLFromArrayBuffer(ab, f.name);
-    featureHistory.push({ type: 'import-stl', name: f.name });
-    setFeatureHistoryDisplay();
-  });
-});
-
-fileSketch.addEventListener('change', (e) => {
-  const f = e.target.files[0];
-  if (!f) return;
-  f.text().then((txt) => {
-    const profile = JSON.parse(txt); // [{x,y}, ...] closed polygon
-    extrudeProfile(profile, Number(depthInput.value || 20));
-  });
-});
-
-btnExtrude.addEventListener('click', () => {
-  alert('To extrude: Import a Sketch JSON first (from sketch.html), then press "Go" again if needed.');
-});
-
-btnExportSTL.addEventListener('click', () => {
-  if (!currentMesh) {
-    alert('Nothing to export yet.');
-    return;
+function handleDown(e) {
+  const p = toLocal(e);
+  if (tool === 'line') {
+    points.push(p);
+  } else if (tool === 'rect') {
+    tempRect = { x0: p.x, y0: p.y, x1: p.x, y1: p.y };
   }
-  const geom = currentMesh.geometry;
-  const stl = exporter.parse(geom);
-  downloadText(stl, 'model.stl');
-});
+  redraw();
+}
 
-// Drag & drop
-['dragenter', 'dragover'].forEach(type =>
-  dropzone.addEventListener(type, (e) => { e.preventDefault(); dropzone.style.background = '#fff'; })
-);
-dropzone.addEventListener('dragleave', () => { dropzone.style.background = ''; });
-dropzone.addEventListener('drop', (e) => {
-  e.preventDefault(); dropzone.style.background = '';
-  const f = e.dataTransfer.files[0];
-  if (!f) return;
-  if (f.name.toLowerCase().endsWith('.stl')) {
-    f.arrayBuffer().then(ab => {
-      loadSTLFromArrayBuffer(ab, f.name);
-      featureHistory.push({ type: 'import-stl', name: f.name });
-      setFeatureHistoryDisplay();
-    });
-  } else if (f.name.toLowerCase().endsWith('.json')) {
-    f.text().then(txt => {
-      const profile = JSON.parse(txt);
-      extrudeProfile(profile, Number(depthInput.value || 20));
-    });
-  } else {
-    alert('Drop an .stl or a Sketch .json file.');
+function handleMove(e) {
+  const p = toLocal(e);
+  if (tool === 'line') {
+    redraw(p);
+  } else if (tool === 'rect' && tempRect) {
+    tempRect.x1 = p.x; tempRect.y1 = p.y;
+    redraw();
   }
-});
-
-// --- Core funcs
-function loadSTLFromArrayBuffer(arrayBuffer, label = 'model.stl') {
-  const geometry = loader.parse(arrayBuffer);
-  geometry.computeVertexNormals();
-  addMesh(geometry, label);
 }
 
-function extrudeProfile(profilePoints, depth = 20) {
-  if (!Array.isArray(profilePoints) || profilePoints.length < 3) {
-    alert('Sketch must be a closed polygon with at least 3 points.');
-    return;
+function handleUp(e) {
+  const p = toLocal(e);
+  if (tool === 'rect' && tempRect) {
+    const r = tempRect;
+    points.push({ x: r.x0, y: r.y0 });
+    points.push({ x: r.x1, y: r.y0 });
+    points.push({ x: r.x1, y: r.y1 });
+    points.push({ x: r.x0, y: r.y1 });
+    tempRect = null;
+    redraw();
   }
-  // Ensure closed
-  const first = profilePoints[0];
-  const last = profilePoints[profilePoints.length - 1];
-  if (first.x !== last.x || first.y !== last.y) profilePoints.push({ x: first.x, y: first.y });
-
-  const shape = new THREE.Shape(profilePoints.map(p => new THREE.Vector2(p.x, p.y)));
-  const extrudeSettings = { depth: depth, bevelEnabled: false };
-  const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  geometry.rotateX(-Math.PI / 2); // put Z up like CAD
-  geometry.computeVertexNormals();
-
-  addMesh(geometry, `Extrude(${depth}mm)`);
-  featureHistory.push({ type: 'extrude', depth, profile: profilePoints.slice(0, 4).concat('…') }); // short preview
-  setFeatureHistoryDisplay();
 }
 
-function addMesh(geometry, label) {
-  if (currentMesh) {
-    scene.remove(currentMesh);
-    currentMesh.geometry.dispose();
-    if (currentMesh.material && currentMesh.material.dispose) currentMesh.material.dispose();
-  }
-  const mat = new THREE.MeshStandardMaterial({ metalness: 0.2, roughness: 0.6 });
-  currentMesh = new THREE.Mesh(geometry, mat);
-  scene.add(currentMesh);
-  zoomToObject(currentMesh);
-  console.log(`Loaded: ${label}`);
+function closeLoop() {
+  if (points.length < 3) { alert('Need at least 3 points.'); return; }
+  const first = points[0], last = points[points.length - 1];
+  if (first.x !== last.x || first.y !== last.y) points.push({ x: first.x, y: first.y });
+  redraw();
 }
 
-function zoomToObject(obj) {
-  const box = new THREE.Box3().setFromObject(obj);
-  const size = new THREE.Vector3();
-  const center = new THREE.Vector3();
-  box.getSize(size);
-  box.getCenter(center);
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const fitDist = maxDim * 2.2;
-  const dir = new THREE.Vector3(1, 1, 1).normalize();
-  camera.position.copy(center.clone().add(dir.multiplyScalar(fitDist)));
-  camera.near = maxDim / 100;
-  camera.far = maxDim * 100;
-  camera.updateProjectionMatrix();
-  controls.target.copy(center);
-  controls.update();
-}
+function exportJSON() {
+  if (points.length < 3) { alert('Draw a closed loop first.'); return; }
+  const first = points[0], last = points[points.length - 1];
+  if (first.x !== last.x || first.y !== last.y) points.push({ x: first.x, y: first.y });
 
-function downloadText(text, filename) {
-  const blob = new Blob([text], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
+  const centered = centerPoints(points);
+  const data = JSON.stringify(centered, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sketch.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
-animate();
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
+function centerPoints(pts) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const p of pts) { if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y; if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y; }
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+  return pts.map(p => ({ x: p.x - cx, y: p.y - cy }));
 }
 
-function resize() {
-  const wrap = document.getElementById('canvas-wrap');
-  const w = wrap.clientWidth || window.innerWidth;
-  const h = window.innerHeight;
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
+function redraw(previewPoint) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // grid
+  ctx.strokeStyle = '#f0f0f0';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= canvas.width; x += 20) { drawLine(x, 0, x, canvas.height); }
+  for (let y = 0; y <= canvas.height; y += 20) { drawLine(0, y, canvas.width, y); }
+
+  // axes
+  ctx.strokeStyle = '#e0e0e0';
+  drawLine(canvas.width / 2, 0, canvas.width / 2, canvas.height);
+  drawLine(0, canvas.height / 2, canvas.width, canvas.height / 2);
+
+  // polyline
+  if (points.length > 0) {
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+    ctx.stroke();
+  }
+
+  // preview
+  if (previewPoint && points.length > 0 && tool === 'line') {
+    ctx.strokeStyle = '#888';
+    ctx.setLineDash([6, 6]);
+    drawLine(points[points.length - 1].x, points[points.length - 1].y, previewPoint.x, previewPoint.y);
+    ctx.setLineDash([]);
+  }
+
+  if (tempRect) {
+    ctx.strokeStyle = '#666';
+    ctx.setLineDash([6, 6]);
+    drawRect(tempRect.x0, tempRect.y0, tempRect.x1, tempRect.y1);
+    ctx.setLineDash([]);
+  }
 }
+
+function drawLine(x0, y0, x1, y1) {
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+}
+function drawRect(x0, y0, x1, y1) {
+  drawLine(x0, y0, x1, y0);
+  drawLine(x1, y0, x1, y1);
+  drawLine(x1, y1, x0, y1);
+  drawLine(x0, y1, x0, y0);
+}
+
+redraw();
