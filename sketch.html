@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>STEM Lab CAD — Viewer</title>
+  <style>
+    html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system; }
+    .app { display: grid; grid-template-columns: 260px 1fr; height: 100%; }
+    .side {
+      border-right: 1px solid #eee; padding: 14px; overflow:auto;
+      background:#fafafa;
+    }
+    .side h2 { margin: 0 0 8px 0; font-size: 18px; }
+    .btn { display:block; width:100%; margin:8px 0; padding:10px 12px; border:1px solid #ddd; border-radius:8px; background:#fff; }
+    .btn:active { transform: scale(0.99); }
+    #dropzone {
+      border:1px dashed #bbb; border-radius:8px; padding:12px; text-align:center; color:#666; font-size:14px;
+    }
+    #canvas-wrap { position: relative; }
+    #three-canvas { display:block; width:100%; height:100vh; }
+    .footer { font-size: 12px; color:#777; margin-top:12px; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .row input[type="number"] { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; }
+    .pill { padding:4px 8px; border:1px solid #ddd; border-radius:999px; background:#fff; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <h2>Viewer</h2>
+
+      <button class="btn" id="btn-load-sample">Load Sample Cube</button>
+
+      <label class="btn" for="file-stl">Import STL…</label>
+      <input id="file-stl" type="file" accept=".stl" style="display:none" />
+
+      <label class="btn" for="file-sketch">Import Sketch JSON…</label>
+      <input id="file-sketch" type="file" accept=".json" style="display:none" />
+
+      <div class="row">
+        <span class="pill">Extrude (mm)</span>
+        <input id="extrude-depth" type="number" value="20" />
+        <button class="btn" id="btn-extrude" style="flex:0 0 auto;">Go</button>
+      </div>
+
+      <button class="btn" id="btn-export-stl">Export STL</button>
+
+      <div id="dropzone" style="margin-top:8px;">
+        Drop STL or Sketch JSON here
+      </div>
+
+      <div class="footer">
+        <div>Tip: Make sketches on <a href="./sketch.html">sketch.html</a> then import here.</div>
+        <div id="feature-json"></div>
+      </div>
+    </aside>
+
+    <main id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+    </main>
+  </div>
+
+  <script type="module" src="./js/viewer.js"></script>
+</body>
+</html>
